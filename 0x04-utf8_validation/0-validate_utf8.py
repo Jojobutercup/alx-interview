@@ -11,14 +11,17 @@ def validUTF8(data):
         # Check if the number is a valid byte
         # (8 least significant bits)
         if num_bytes == 0:
-            if (num >> 5) == 0b110:
-                num_bytes = 1
             # Check if the current byte is a single byte character
+            if (num >> 7) == 0b0:
+                continue
+            # Check the number of bytes in the character
+            elif (num >> 5) == 0b110:
+                num_bytes = 1
             elif (num >> 4) == 0b1110:
                 num_bytes = 2
             elif (num >> 3) == 0b11110:
                 num_bytes = 3
-            elif (num >> 7) != 0:
+            else:
                 return False
         else:
             # Check if the current byte is a continuation byte
