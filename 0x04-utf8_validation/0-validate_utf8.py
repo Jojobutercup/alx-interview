@@ -10,23 +10,32 @@ def validUTF8(data):
     for num in data:
         # Check if the number is a valid byte
         # (8 least significant bits)
+        binary = format(num, '08b')
+
+        # If it's the start of a new character
         if num_bytes == 0:
             # Check if the current byte is a single byte character
-            if (num >> 7) == 0b0:
+            for bit in binary:
+                if bit == '0':
+                    break
+                num_bytes += 1
+
+            # Check invalid number of bytes in the character
+            if num_bytes == 0:
                 continue
-            # Check the number of bytes in the character
-            elif (num >> 5) == 0b110:
-                num_bytes = 1
-            elif (num >> 4) == 0b1110:
-                num_bytes = 2
-            elif (num >> 3) == 0b11110:
-                num_bytes = 3
-            else:
+
+            ''' There is no need to check continuation byte,
+            if character is a single byte '''
+            if num_bytes == 1 or num_bytes > 4:
                 return False
+
         else:
             # Check if the current byte is a continuation byte
-            if (num >> 6) != 0b10:
+            if not (binary[0] == '1' and binary[1] == '0'):
                 return False
+
+            # Decreases the count of leftover bytes
             num_bytes -= 1
 
+    # bytes present have been validated
     return num_bytes == 0
