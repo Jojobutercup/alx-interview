@@ -10,9 +10,6 @@ def validUTF8(data):
     for num in data:
         # Check if the number is a valid byte
         # (8 least significant bits)
-        binary = format(num, '08b')
-
-        # If it's the start of a new character
         if num_bytes == 0:
             # Check if the current byte is a single byte character
             if (num >> 7) == 0b0:
