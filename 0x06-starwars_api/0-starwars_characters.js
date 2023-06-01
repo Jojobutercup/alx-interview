@@ -1,34 +1,35 @@
-#!/usr/bin/node
+#!/usr/bin/env node
 
 const request = require('request');
+const { exit } = require('process');
+const filmId = process.argv[2];
+const api = `https://swapi-api.hbtn.io/api/films/${filmId}/`;
 
-const movieId = process.argv[2];
-
-if (!movieId) {
-  console.error('Please provide a Movie ID as a command-line argument');
-  process.exit(1);
+if (filmId === undefined) {
+  console.log('Usage: node 0-starwars_characters.js <film id>');
+  exit();
 }
 
-const url = `https://swapi.dev/api/films/${movieId}/`;
-
-request(url, (error, response, body) => {
+// GET film data
+request(api, (error, response, body) => {
   if (error) {
-    console.error('Error:', error);
-  } else if (response.statusCode !== 200) {
-    console.error('Invalid request. Status Code:', response.statusCode);
+    console.log('error', error);
   } else {
-    const movie = JSON.parse(body);
-    movie.characters.forEach((characterUrl) => {
-      request(characterUrl, (err, res, charBody) => {
-        if (err) {
-          console.error('Error:', err);
-        } else if (res.statusCode !== 200) {
-          console.error('Invalid request. Status Code:', res.statusCode);
-        } else {
-          const character = JSON.parse(charBody);
-          console.log(character.name);
-        }
-      });
-    });
+    const data = JSON.parse(body).characters;
+    printSorted(data, 0);
   }
 });
+
+// GET each character in sorted order
+function printSorted (chars, n) {
+  if (n === chars.length) { return; }
+  request(chars[n], (error, response, actors) => {
+    if (error) {
+      console.log('error', error);
+    } else {
+      const actor = JSON.parse(actors);
+      console.log(actor.name);
+      printSorted(chars, n + 1);
+    }
+  });
+}
