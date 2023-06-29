@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+
 def isWinner(x, nums):
     def is_prime(num):
         if num < 2:
@@ -34,7 +35,7 @@ def isWinner(x, nums):
 
         # Count the number of primes remaining
         count = sum(primes)
-        
+
         if count % 2 == 0:
             ben_wins += 1
         else:
